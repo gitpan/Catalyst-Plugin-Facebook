@@ -1,18 +1,20 @@
 package Catalyst::Plugin::Facebook;
+our $VERSION = '0.2';
+
 
 use strict;
 use warnings;
 
 use WWW::Facebook::API;
 
-our $VERSION = '0.1';
+use Scalar::Util qw();
 
 # why not
 *fb = \&facebook;
 
 sub facebook {
     my ($c) = @_;
-    if (! $c->{'facebook'}) {
+    unless ( $c->{'facebook'} and Scalar::Util::blessed($c->{'facebook'}) and $c->{'facebook'}->isa('WWW::Facebook::API') ) {
         $c->{'facebook'} = WWW::Facebook::API->new(
             'desktop' => 0,
             'format' => 'JSON',
@@ -27,9 +29,16 @@ sub facebook {
 }
 
 1;
-__END__
+
+
 
 =pod
+
+=head1 VERSION
+
+version 0.2
+
+=pod 
 
 =head1 NAME
 
@@ -47,7 +56,7 @@ a Catalyst application.
       'secret' => '12345ddd',
     }
   );
-  
+
   sub auto : Private { 
       my ( $self, $c ) = @_;
       if (! $self->can_display($c)) {
@@ -55,7 +64,7 @@ a Catalyst application.
       }
       return 1;
   }
-  
+
   sub can_display {
       my ($self, $c) = @_;
       if (! $c->facebook->canvas->in_fb_canvas()) {
@@ -81,10 +90,18 @@ WWW::Facebook::API module for all of the configuration options available.
 
 The two required configuration options are 'api_key' and 'secret'.
 
-=head1 EXPORT
+=head1 INTERFACE
 
-This package exports the facebook method. The facebook method returns a
-full WWW::Facebook::API object.
+=head2 METHODS
+
+=head3 facebook
+
+This method, which will be available on your Catalyst context object, will
+return the full L<WWW::Facebook::API> object.
+
+=head3 fb
+
+fb is just an alias for facebook.
 
 =head1 BUGS
 
@@ -120,7 +137,7 @@ L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Catalyst-Plugin-Facebook>
 
 L<http://search.cpan.org/dist/Catalyst-Plugin-Facebook>
 
-=back
+=back 
 
 =head1 COPYRIGHT & LICENSE
 
@@ -129,4 +146,22 @@ Copyright 2007 Nick Gerakines, all rights reserved.
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
-=cut
+
+
+=head1 AUTHOR
+
+  Nick Gerakines <nick@gerakines.net>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2009 by Nick Gerakines.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut 
+
+
+
+__END__
+
